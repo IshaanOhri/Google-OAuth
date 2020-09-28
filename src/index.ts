@@ -4,19 +4,24 @@ require('newrelic');
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
+import handlebars from 'express-handlebars';
+import path from 'path';
 import logger from './logger/config';
 import { code, message } from './config/messages';
 import databaseConnect from './database/database';
+import loginRouter from './api/routes/login';
 
 const app = express();
 const PORT: number = Number(process.env.PORT);
 const HOST: string = String(process.env.HOST);
 
+// Connect to database
 databaseConnect();
 
 app.use(cors());
 app.use(express.json());
 
+// Setup logging
 app.use(
 	morgan((tokens, req: Request, res: Response) => {
 		logger.info(
@@ -29,6 +34,18 @@ app.use(
 	})
 );
 
+// Setup handlebars
+app.engine('.hbs', handlebars({ defaultLayout: 'main', extname: '.hbs' }));
+app.set('view engine', '.hbs');
+app.set('views', path.join(__dirname, '/views'));
+
+// Static Folder
+app.use(express.static(path.join(__dirname, '/public')));
+
+// Setup routers
+app.use(loginRouter);
+
+// Default route
 app.use('/', (req: Request, res: Response) => {
 	res.send({
 		success: true,

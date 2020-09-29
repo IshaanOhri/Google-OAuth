@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import Story from '../../modals/Story';
 
 const login = async (req: Request, res: Response) => {
 	res.render('Login', {
@@ -7,7 +8,17 @@ const login = async (req: Request, res: Response) => {
 };
 
 const dashboard = async (req: Request, res: Response) => {
-	res.render('Dashboard');
+	const user: any = req.user!;
+
+	try {
+		const stories = await Story.find({ user: user.id }).lean();
+		res.render('Dashboard', {
+			name: user.firstName,
+			stories
+		});
+	} catch (err) {
+		res.render('error/500');
+	}
 };
 
 export { login, dashboard };

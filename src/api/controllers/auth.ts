@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import passport from 'passport';
 
 const googleCallback = async (req: Request, res: Response) => {
 	res.redirect('/dashboard');

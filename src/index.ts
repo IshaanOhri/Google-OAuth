@@ -12,6 +12,7 @@ import logger from './logger/config';
 import { code, message } from './config/messages';
 import databaseConnect from './database/database';
 import loginRouter from './api/routes/login';
+import authRouter from './api/routes/auth';
 
 const app = express();
 const PORT: number = Number(process.env.PORT);
@@ -62,6 +63,7 @@ app.use(express.static(path.join(__dirname, '/public')));
 
 // Setup routers
 app.use(loginRouter);
+app.use('/auth', authRouter);
 
 // Default route
 app.use('/', (req: Request, res: Response) => {

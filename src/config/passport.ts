@@ -20,7 +20,7 @@ module.exports = (passport: any) => {
 		done(null, user.id);
 	});
 
-	passport.deserialUser((id: any, done: any) => {
+	passport.deserializeUser((id: any, done: any) => {
 		User.findById(id, (err, user) => {
 			done(err, user);
 		});

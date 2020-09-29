@@ -8,23 +8,27 @@ import handlebars from 'express-handlebars';
 import path from 'path';
 import passport from 'passport';
 import session from 'express-session';
+import mongoose from 'mongoose';
 import logger from './logger/config';
-import { code, message } from './config/messages';
 import databaseConnect from './database/database';
 import loginRouter from './api/routes/login';
 import authRouter from './api/routes/auth';
+import healthRouter from './api/routes/health';
 
 const app = express();
+app.use(cors());
+app.use(express.json());
 const PORT: number = Number(process.env.PORT);
 const HOST: string = String(process.env.HOST);
 
+// Initialize passport
 require('./config/passport')(passport);
+
+// Initialize MongoStore
+const MongoStore = require('connect-mongo')(session);
 
 // Connect to database
 databaseConnect();
-
-app.use(cors());
-app.use(express.json());
 
 // Setup logging
 app.use(
@@ -49,7 +53,8 @@ app.use(
 	session({
 		secret: 'keyboard cat',
 		resave: false,
-		saveUninitialized: false
+		saveUninitialized: false,
+		store: new MongoStore({ mongooseConnection: mongoose.connection })
 		// cookie:{secure:true} Works only with HTTPS
 	})
 );
@@ -62,16 +67,13 @@ app.use(passport.session());
 app.use(express.static(path.join(__dirname, '/public')));
 
 // Setup routers
+app.use(healthRouter);
 app.use(loginRouter);
 app.use('/auth', authRouter);
 
 // Default route
-app.use('/', (req: Request, res: Response) => {
-	res.send({
-		success: true,
-		code: code.homeRoute,
-		message: message.homeRoute
-	});
+app.use('*', (req: Request, res: Response) => {
+	res.redirect('/');
 });
 
 app.listen(PORT, HOST, () => {

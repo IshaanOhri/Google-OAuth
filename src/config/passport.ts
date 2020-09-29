@@ -1,5 +1,4 @@
 import GoogleStrategy from 'passport-google-oauth20';
-import mongoose from 'mongoose';
 import User from '../modals/User';
 import logger from '../logger/config';
 

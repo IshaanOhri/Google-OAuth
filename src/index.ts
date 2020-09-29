@@ -14,10 +14,18 @@ import databaseConnect from './database/database';
 import loginRouter from './api/routes/login';
 import authRouter from './api/routes/auth';
 import healthRouter from './api/routes/health';
+import storyRouter from './api/routes/stories';
 
 const app = express();
+
+// CORS
 app.use(cors());
+
+// Body Parser
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+
+// PORT and HOST
 const PORT: number = Number(process.env.PORT);
 const HOST: string = String(process.env.HOST);
 
@@ -69,6 +77,7 @@ app.use(express.static(path.join(__dirname, '/public')));
 // Setup routers
 app.use(healthRouter);
 app.use(loginRouter);
+app.use('/stories', storyRouter);
 app.use('/auth', authRouter);
 
 // Default route

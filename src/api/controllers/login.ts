@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import logger from '../../logger/config';
 import Story from '../../modals/Story';
 
 const login = async (req: Request, res: Response) => {
@@ -17,6 +18,7 @@ const dashboard = async (req: Request, res: Response) => {
 			stories
 		});
 	} catch (err) {
+		logger.error(err);
 		res.render('error/500');
 	}
 };

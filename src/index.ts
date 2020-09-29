@@ -6,6 +6,8 @@ import cors from 'cors';
 import morgan from 'morgan';
 import handlebars from 'express-handlebars';
 import path from 'path';
+import passport from 'passport';
+import session from 'express-session';
 import logger from './logger/config';
 import { code, message } from './config/messages';
 import databaseConnect from './database/database';
@@ -14,6 +16,8 @@ import loginRouter from './api/routes/login';
 const app = express();
 const PORT: number = Number(process.env.PORT);
 const HOST: string = String(process.env.HOST);
+
+require('./config/passport')(passport);
 
 // Connect to database
 databaseConnect();
@@ -38,6 +42,20 @@ app.use(
 app.engine('.hbs', handlebars({ defaultLayout: 'main', extname: '.hbs' }));
 app.set('view engine', '.hbs');
 app.set('views', path.join(__dirname, '/views'));
+
+// Express sessions
+app.use(
+	session({
+		secret: 'keyboard cat',
+		resave: false,
+		saveUninitialized: false
+		// cookie:{secure:true} Works only with HTTPS
+	})
+);
+
+// Passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Static Folder
 app.use(express.static(path.join(__dirname, '/public')));

@@ -12,7 +12,26 @@ module.exports = (passport: any) => {
 				callbackURL: '/auth/google/callback'
 			},
 			async (accessToken, refreshToken, profile, done) => {
-				logger.info(profile);
+				const newUser = {
+					googleID: profile.id,
+					displayName: profile.displayName,
+					firstName: profile.name?.givenName,
+					lastName: profile.name?.familyName,
+					image: profile.photos![0].value
+				};
+
+				try {
+					let user = await User.findOne({ googleID: profile.id });
+
+					if (user) {
+						done(undefined, user);
+					} else {
+						user = await User.create(newUser);
+						done(undefined, user);
+					}
+				} catch (err) {
+					logger.error(err);
+				}
 			}
 		)
 	);

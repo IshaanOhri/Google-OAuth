@@ -7,10 +7,7 @@ const login = async (req: Request, res: Response) => {
 };
 
 const dashboard = async (req: Request, res: Response) => {
-	res.send({
-		success: true,
-		message: 'Dashboard'
-	});
+	res.render('Dashboard');
 };
 
 export { login, dashboard };
